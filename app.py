@@ -57,14 +57,13 @@ if 'ingresos' not in st.session_state:
 if 'gastos' not in st.session_state: 
     st.session_state['gastos'] = pd.DataFrame(columns=['id', 'fecha', 'proveedor', 'categoria', 'base', 'iva_pct', 'cuota_iva', 'irpf_pct', 'retencion', 'total'])
 
-LIMITES = {'DEMO': 15, 'NORMAL': 20, 'PRO': 999999}
+# ⬇️⬇️ AQUÍ ESTÁ EL CAMBIO DE LÓGICA (5 REGISTROS) ⬇️⬇️
+LIMITES = {'DEMO': 5, 'NORMAL': 20, 'PRO': 999999}
 
 def cargar_datos():
     if st.session_state['user'] is None: return
     try:
-        # CORRECCIÓN NUBE: Usamos .id
         user_id = st.session_state['user'].id 
-        
         try:
             resp_perfil = supabase.table('perfiles').select('plan').eq('id', user_id).execute()
             if resp_perfil.data: st.session_state['plan'] = resp_perfil.data[0]['plan']
@@ -75,13 +74,13 @@ def cargar_datos():
 
         resp_gas = supabase.table('gastos').select('*').eq('user_id', user_id).execute()
         st.session_state['gastos'] = pd.DataFrame(resp_gas.data) if resp_gas.data else pd.DataFrame(columns=['id', 'fecha', 'proveedor', 'categoria', 'base', 'iva_pct', 'cuota_iva', 'irpf_pct', 'retencion', 'total'])
-    
     except Exception as e:
         st.error(f"Error cargando datos: {e}")
 
 def check_limite():
     total = len(st.session_state['ingresos']) + len(st.session_state['gastos'])
-    return total >= LIMITES.get(st.session_state['plan'], 15)
+    # Se asegura de usar el límite de 5 si es DEMO
+    return total >= LIMITES.get(st.session_state['plan'], 5)
 
 def ir_a_ingresos(): st.session_state['navegacion'] = "💰 Ingresos"
 def ir_a_gastos(): st.session_state['navegacion'] = "💸 Gastos"
@@ -138,7 +137,6 @@ def logout():
     st.rerun()
 
 def pagina_dashboard():
-    # CORRECCIÓN NUBE: Usamos .email
     st.markdown(f"### 👋 Hola, **{st.session_state['user'].email}**")
     
     df_i = st.session_state.get('ingresos', pd.DataFrame())
@@ -204,7 +202,8 @@ def pagina_dashboard():
 
 def pagina_ingresos():
     st.title("💰 Registrar Ingresos")
-    if check_limite(): st.error("Límite alcanzado.")
+    # AQUÍ MENSAJE DE ERROR ACTUALIZADO
+    if check_limite(): st.error("Límite alcanzado (Máx 5 en Demo).")
     else:
         with st.form("fi"):
             c1,c2 = st.columns(2)
@@ -218,7 +217,6 @@ def pagina_ingresos():
                 c_iva = base * (iva/100)
                 ret = base * (irpf/100)
                 tot = base + c_iva - ret
-                # CORRECCIÓN NUBE: Usamos .id
                 supabase.table('ingresos').insert({
                     "user_id": st.session_state['user'].id, 
                     "fecha": str(fecha), "cliente": cli,
@@ -230,7 +228,6 @@ def pagina_ingresos():
     df = st.session_state['ingresos']
     st.dataframe(df, use_container_width=True)
 
-    # SECCIÓN BORRAR
     if not df.empty:
         st.markdown("---")
         st.subheader("🗑️ Borrar Ingreso")
@@ -246,7 +243,8 @@ def pagina_ingresos():
 
 def pagina_gastos():
     st.title("💸 Registrar Gastos")
-    if check_limite(): st.error("Límite alcanzado.")
+    # AQUÍ MENSAJE DE ERROR ACTUALIZADO
+    if check_limite(): st.error("Límite alcanzado (Máx 5 en Demo).")
     else:
         with st.form("fg"):
             c1,c2 = st.columns(2)
@@ -261,7 +259,6 @@ def pagina_gastos():
                 c_iva = base * (iva/100)
                 ret = base * (irpf/100)
                 tot = base + c_iva - ret
-                # CORRECCIÓN NUBE: Usamos .id
                 supabase.table('gastos').insert({
                     "user_id": st.session_state['user'].id,
                     "fecha": str(fecha), "proveedor": prov, "categoria": cat,
@@ -273,7 +270,6 @@ def pagina_gastos():
     df = st.session_state['gastos']
     st.dataframe(df, use_container_width=True)
 
-    # SECCIÓN BORRAR
     if not df.empty:
         st.markdown("---")
         st.subheader("🗑️ Borrar Gasto")
@@ -290,45 +286,22 @@ def pagina_gastos():
 def pagina_planes():
     st.title("💎 Suscripción")
     
-    # ⚠️ -----------------------------------------------
-    # ⚠️ CAMBIA ESTO CON TUS ENLACES REALES DE 3 DÍAS
-    LINK_NORMAL = "https://buy.stripe.com/test_..." 
-    LINK_PRO    = "https://buy.stripe.com/test_..."
-    # --------------------------------------------------
+    # ⚠️ -------------------------------------------------------------
+    # ⚠️ ZONA DE ENLACES (¡No borres las comillas!)
+    # Tu enlace real:
+    LINK_NORMAL = "https://buy.stripe.com/fZu8wI2pT78CgHA9O9g7e04" 
+    # Pon aquí el enlace del PRO:
+    LINK_PRO    = "https://buy.stripe.com/6oU7sEfcFfF8crk4tPg7e05"
+    # ----------------------------------------------------------------
 
     c1, c2, c3 = st.columns(3)
     with c1:
+        # ⬇️⬇️ AQUÍ ESTÁ EL CAMBIO DE TEXTO VISUAL (5 REGISTROS) ⬇️⬇️
         st.markdown("""<div class="plan-header" style="background-color: #64748B;">🌱 GRATIS</div><h2 style="text-align:center; color:#333;">0 €</h2><hr><ul style="list-style: none; padding:0; color: #4B5563;"><li>✅ 5 Registros prueba</li><li>✅ Dashboard Básico</li><li>❌ Soporte</li></ul>""", unsafe_allow_html=True)
         if st.session_state['plan'] == 'DEMO': st.button("PLAN ACTUAL", disabled=True, key="btn_free")
     with c2:
-        # AQUÍ CAMBIADO A 3 DÍAS
         st.markdown("""<div class="plan-header" style="background-color: #3B82F6;">🚀 NORMAL</div><h2 style="text-align:center; color:#333;">4.99 €<small>/mes</small></h2><center><span style="background-color:#E0F2F1; color:#00695C; padding: 2px 8px; border-radius:10px; font-size:0.8em;">🎁 3 DÍAS GRATIS</span></center><hr><ul style="list-style: none; padding:0; color: #4B5563;"><li>✅ <b>20 Registros/mes</b></li><li>✅ Dashboard Completo</li><li>✅ Soporte Email</li></ul>""", unsafe_allow_html=True)
         if st.session_state['plan'] == 'NORMAL': st.button("✅ TU PLAN ACTUAL", disabled=True)
-        else: st.link_button("👉 SUSCRIBIRSE", "https://buy.stripe.com/fZu8wI2pT78CgHA9O9g7e04")
+        else: st.link_button("👉 PROBAR GRATIS", LINK_NORMAL, use_container_width=True)
     with c3:
-        # AQUÍ CAMBIADO A 3 DÍAS
-        st.markdown("""<div class="plan-header" style="background: linear-gradient(to right, #F59E0B, #D97706);">👑 PRO</div><h2 style="text-align:center; color:#333;">11.99 €<small>/mes</small></h2><center><span style="background-color:#FFF3E0; color:#E65100; padding: 2px 8px; border-radius:10px; font-size:0.8em;">🎁 3 DÍAS GRATIS</span></center><hr><ul style="list-style: none; padding:0; color: #4B5563;"><li>🔥 <b>ILIMITADO</b></li><li>🔥 <b>Gestor Personal</b></li><li>✅ Soporte Email</li></ul>""", unsafe_allow_html=True)
-        if st.session_state['plan'] == 'PRO': st.button("✅ TU PLAN ACTUAL", disabled=True)
-        else: st.link_button("👉 SUSCRIBIRSE", "https://buy.stripe.com/dRm14g1lP2Sm7708K5g7e03")
-    
-    st.write("")
-    # TEXTO INFORMATIVO ACTUALIZADO
-    st.info("ℹ️ Tienes 3 días de prueba gratis. Cancela cuando quieras.")
-
-# --- 6. CONTROLADOR PRINCIPAL BLINDADO ---
-if st.session_state['user'] is None:
-    auth_page()
-else:
-    if 'ingresos' not in st.session_state or st.session_state['ingresos'] is None:
-        cargar_datos()
-
-    with st.sidebar:
-        # CORRECCIÓN NUBE: Usamos .email
-        st.write(f"Usuario: {st.session_state['user'].email}")
-        opcion = st.radio("Menú", ["🏠 Dashboard", "💰 Ingresos", "💸 Gastos", "💎 Suscripción"], key='navegacion')
-        if st.button("Cerrar Sesión"): logout()
-
-    if "Dashboard" in opcion: pagina_dashboard()
-    elif "Ingresos" in opcion: pagina_ingresos()
-    elif "Gastos" in opcion: pagina_gastos()
-    elif "Suscripción" in opcion: pagina_planes()
+        st.markdown("""<div class="plan-header" style="background: linear-gradient(to right, #F59E0B, #D97706);">👑 PRO</div><h2 style="text-align:center; color:#333;">11.99 €<small>/mes</small></h2><center><span style="background-color:#FFF3E0; color:#E65100; padding: 2px 8px; border-radius:10px; font-size:0.8em;">🎁 3 DÍAS GRATIS</span></center><hr><ul style="list-style: none; padding:0; color: #4B5563;"><li>🔥
