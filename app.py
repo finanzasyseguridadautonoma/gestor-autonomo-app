@@ -298,7 +298,7 @@ def pagina_planes():
 
     c1, c2, c3 = st.columns(3)
     with c1:
-        st.markdown("""<div class="plan-header" style="background-color: #64748B;">🌱 GRATIS</div><h2 style="text-align:center; color:#333;">0 €</h2><hr><ul style="list-style: none; padding:0; color: #4B5563;"><li>✅ 15 Registros prueba</li><li>✅ Dashboard Básico</li><li>❌ Soporte</li></ul>""", unsafe_allow_html=True)
+        st.markdown("""<div class="plan-header" style="background-color: #64748B;">🌱 GRATIS</div><h2 style="text-align:center; color:#333;">0 €</h2><hr><ul style="list-style: none; padding:0; color: #4B5563;"><li>✅ 5 Registros prueba</li><li>✅ Dashboard Básico</li><li>❌ Soporte</li></ul>""", unsafe_allow_html=True)
         if st.session_state['plan'] == 'DEMO': st.button("PLAN ACTUAL", disabled=True, key="btn_free")
     with c2:
         # AQUÍ CAMBIADO A 3 DÍAS
