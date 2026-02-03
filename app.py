@@ -341,7 +341,7 @@ def pagina_planes():
         if st.session_state['plan'] == 'PRO': 
             st.button("✅ TU PLAN ACTUAL", disabled=True)
         else: 
-            st.link_button("👉 SUSCRIBIRSE", "https://buy.stripe.com/6oU7sEfcFfF8crk4tPg7e05")
+            st.link_button("👉 SUSCRIBIRSE", "https://buy.stripe.com/aFa5kw1lP0Kebng5xTg7e08")
     
     st.write("")
     st.info("ℹ️ Tienes 3 días de prueba gratis. Cancela cuando quieras.")
