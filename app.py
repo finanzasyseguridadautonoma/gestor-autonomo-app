@@ -323,14 +323,16 @@ def pagina_planes():
         if st.session_state['plan'] == 'NORMAL': 
             st.button("✅ TU PLAN ACTUAL", disabled=True)
         else: 
-            st.link_button("👉 PROBAR GRATIS", "https://buy.stripe.com/bJe6oA0hL0Keajc5xTg7e07")
+            st.link_button("👉 SUSCRIBIRSE", "https://buy.stripe.com/8x23co9Sl8cG770gcxg7e09")
 
-    # --- PLAN PRO (REPARADO: TEXTO EN MULTIPLES LINEAS) ---
+    # --- PLAN PRO (REPARADO: CÓDIGO DIVIDIDO PARA QUE NO SE ROMPA) ---
     with c3:
         st.markdown("""
             <div class="plan-header" style="background: linear-gradient(to right, #F59E0B, #D97706);">👑 PRO</div>
             <h2 style="text-align:center; color:#333;">11.99 €<small>/mes</small></h2>
-            <center><span style="background-color:#FFF3E0; color:#E65100; padding: 2px 8px; border-radius:10px; font-size:0.8em;">🎁 3 DÍAS GRATIS</span></center>
+            <center>
+                <span style="background-color:#FFF3E0; color:#E65100; padding: 2px 8px; border-radius:10px; font-size:0.8em;">🎁 3 DÍAS GRATIS</span>
+            </center>
             <hr>
             <ul style="list-style: none; padding:0; color: #4B5563;">
                 <li>🔥 <b>ILIMITADO</b></li>
@@ -338,6 +340,7 @@ def pagina_planes():
                 <li>✅ Soporte Email</li>
             </ul>
         """, unsafe_allow_html=True)
+        
         if st.session_state['plan'] == 'PRO': 
             st.button("✅ TU PLAN ACTUAL", disabled=True)
         else: 
