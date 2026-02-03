@@ -5,7 +5,7 @@ import datetime
 from supabase import create_client, Client
 
 # --- 1. CONFIGURACIÓN ---
-st.set_page_config(page_title="Gestor Autónomo PRO", layout="wide", page_icon="💼")
+st.set_page_config(page_title="Gestor Autónomo PRO", layout="wide", page_icon="logo.jpg")
 
 # --- 2. CONEXIÓN A SUPABASE ---
 @st.cache_resource
@@ -37,7 +37,7 @@ st.markdown("""
     /* FONDO Y COLOR GENERAL */
     .stApp { background-color: #F8FAFC; color: #1E293B; }
     
-    /* REDUCIR ESPACIOS PARA QUE QUEPA MÁS EN EL MÓVIL */
+    /* REDUCIR ESPACIOS PARA MÓVIL */
     .block-container {
         padding-top: 1rem !important;
         padding-bottom: 2rem !important;
@@ -45,32 +45,31 @@ st.markdown("""
         padding-right: 1rem !important;
     }
 
-    /* TARJETAS CON EFECTO "GLASS" Y SOMBRA SUAVE */
+    /* TARJETAS CON EFECTO "GLASS" */
     div[data-testid="column"], div[data-testid="stMetric"], div[data-testid="stDataFrame"] {
         background-color: #FFFFFF;
         border-radius: 16px;
         padding: 15px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
-        border: none; /* Quitamos bordes feos */
+        border: none;
     }
     
-    /* COLORES DASHBOARD (MÁS VIVOS) */
-    div[data-testid="stMetric"]:nth-of-type(1) { border-left: 6px solid #10B981; } /* Verde Esmeralda */
-    div[data-testid="stMetric"]:nth-of-type(2) { border-left: 6px solid #EF4444; } /* Rojo Vibrante */
-    div[data-testid="stMetric"]:nth-of-type(3) { border-left: 6px solid #3B82F6; } /* Azul Eléctrico */
+    /* COLORES DASHBOARD */
+    div[data-testid="stMetric"]:nth-of-type(1) { border-left: 6px solid #10B981; } 
+    div[data-testid="stMetric"]:nth-of-type(2) { border-left: 6px solid #EF4444; } 
+    div[data-testid="stMetric"]:nth-of-type(3) { border-left: 6px solid #3B82F6; } 
     
-    /* HUCHA HACIENDA DESTACADA */
+    /* HUCHA HACIENDA */
     div[data-testid="stMetric"]:nth-of-type(4) {
         background: linear-gradient(135deg, #FFFBEB 0%, #FFFFFF 100%);
         border: 2px solid #F59E0B;
-        transform: scale(1.0); /* Quitamos zoom para que no descuadre en móvil */
     }
     div[data-testid="stMetric"]:nth-of-type(4) label { color: #D97706 !important; font-weight: 800; }
     
-    /* HERO SECTION (CABECERA) */
+    /* HERO SECTION */
     .hero-box {
         background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
-        padding: 30px; /* Más compacto */
+        padding: 30px;
         border-radius: 20px;
         color: white;
         text-align: center;
@@ -78,31 +77,18 @@ st.markdown("""
         box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
     }
     
-    /* BOTONES TIPO APP (MÁS GORDITOS Y REDONDOS) */
+    /* BOTONES TIPO APP */
     .stButton > button {
-        border-radius: 12px; 
-        font-weight: 600; 
-        border: none;
-        background-color: #EFF6FF; 
-        color: #2563EB; 
-        padding: 0.5rem 1rem;
-        transition: all 0.2s;
+        border-radius: 12px; font-weight: 600; border: none;
+        background-color: #EFF6FF; color: #2563EB; 
+        padding: 0.5rem 1rem; transition: all 0.2s;
         box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
     .stButton > button:hover { 
-        background-color: #2563EB; 
-        color: white; 
+        background-color: #2563EB; color: white; 
         box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
     }
     
-    /* INPUTS (CAJAS DE TEXTO) MÁS MODERNAS */
-    .stTextInput > div > div > input {
-        border-radius: 10px;
-        border: 1px solid #E2E8F0;
-        background-color: white;
-    }
-
-    /* PLANES */
     .plan-header {
         padding: 15px; border-radius: 12px 12px 0 0; color: white;
         text-align: center; font-weight: 800; font-size: 1.1em;
@@ -154,8 +140,8 @@ def ir_a_gastos(): st.session_state['navegacion'] = "💸 Gastos"
 def auth_page():
     st.markdown("""
         <div class="hero-box">
-            <div style="font-size: 3.5em; font-weight: 900; margin-bottom: 15px;">Gestor Autónomo PRO</div>
-            <div style="font-size: 1.5em; opacity: 0.95; font-weight: 300;">Tu fiscalidad bajo control. Fácil, visual y automático.</div>
+            <div style="font-size: 2.5em; font-weight: 900; margin-bottom: 10px;">Gestor Autónomo PRO</div>
+            <div style="font-size: 1.2em; opacity: 0.95; font-weight: 300;">Tu fiscalidad bajo control.</div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -165,7 +151,7 @@ def auth_page():
             st.error("❌ Error de conexión: Revisa secrets.toml")
             return
 
-        st.info("👋 **Bienvenido/a**. Inicia sesión para ver tus datos.")
+        st.info("👋 **Bienvenido/a**. Inicia sesión.")
         
         tab1, tab2 = st.tabs(["Iniciar Sesión", "Registrarse"])
         with tab1:
@@ -189,9 +175,9 @@ def auth_page():
 
     st.markdown("---")
     cA, cB, cC = st.columns(3)
-    with cA: st.info("📊 **Visual e Intuitivo**\n\nMira tus impuestos en tiempo real.")
-    with cB: st.warning("⚡ **Cálculo Automático**\n\nOlvídate de calcular el IVA y el IRPF manual.")
-    with cC: st.success("📱 **Multiplataforma**\n\nDatos en la nube, accesibles desde cualquier lugar.")
+    with cA: st.info("📊 **Visual**\n\nImpuestos en tiempo real.")
+    with cB: st.warning("⚡ **Automático**\n\nSin cálculos manuales.")
+    with cC: st.success("📱 **App**\n\nDesde cualquier lugar.")
 
 def logout():
     supabase.auth.sign_out()
@@ -203,6 +189,15 @@ def logout():
 def pagina_dashboard():
     st.markdown(f"### 👋 Hola, **{st.session_state['user'].email}**")
     
+    # --- AVISO INSTALACIÓN APP (TIP 1) ---
+    with st.expander("📲 ¿Cómo instalar la App en tu móvil?"):
+        st.info("""
+        1. Pulsa en **Compartir** (iPhone) o los **3 puntitos** (Android).
+        2. Elige **"Añadir a Pantalla de Inicio"**.
+        3. ¡Listo! Se abrirá a pantalla completa.
+        """)
+    st.write("") 
+
     df_i = st.session_state.get('ingresos', pd.DataFrame())
     df_g = st.session_state.get('gastos', pd.DataFrame())
 
@@ -245,24 +240,24 @@ def pagina_dashboard():
     if not chart_data.empty:
         chart_data = chart_data.groupby(['Mes', 'Tipo'], as_index=False)['base'].sum()
         fig = px.bar(chart_data, x='Mes', y='base', color='Tipo', barmode='group',
-                     color_discrete_map={'Ingresos': '#2ECC71', 'Gastos': '#E74C3C'})
+                     color_discrete_map={'Ingresos': '#10B981', 'Gastos': '#EF4444'})
         fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.info("Añade movimientos para ver la gráfica.")
 
     st.markdown("---")
-    st.subheader("🏛️ Previsión Fiscal Trimestral")
+    st.subheader("🏛️ Previsión Fiscal")
     t1, t2, t3 = st.columns(3)
-    with t1: st.info(f"**MODELO 303 (IVA)**\n\n# {mod_303:.2f} €\n*(IVA repercutido - soportado)*")
-    with t2: st.warning(f"**MODELO 130 (IRPF)**\n\n# {mod_130:.2f} €\n*(20% del beneficio acumulado)*")
-    with t3: st.error(f"**MODELO 111 (Retenciones)**\n\n# {mod_111:.2f} €\n*(Retenciones practicadas)*")
+    with t1: st.info(f"**MODELO 303 (IVA)**\n\n# {mod_303:.2f} €")
+    with t2: st.warning(f"**MODELO 130 (IRPF)**\n\n# {mod_130:.2f} €")
+    with t3: st.error(f"**MODELO 111 (Retenciones)**\n\n# {mod_111:.2f} €")
 
     st.markdown("---")
     st.subheader("⚡ Acciones Rápidas")
     b1, b2 = st.columns(2)
-    b1.button("➕ AÑADIR NUEVO INGRESO", use_container_width=True, on_click=ir_a_ingresos)
-    b2.button("➖ AÑADIR NUEVO GASTO", use_container_width=True, on_click=ir_a_gastos)
+    b1.button("➕ NUEVO INGRESO", use_container_width=True, on_click=ir_a_ingresos)
+    b2.button("➖ NUEVO GASTO", use_container_width=True, on_click=ir_a_gastos)
 
 def pagina_ingresos():
     st.title("💰 Registrar Ingresos")
@@ -293,11 +288,11 @@ def pagina_ingresos():
 
     if not df.empty:
         st.markdown("---")
-        st.subheader("🗑️ Borrar Ingreso")
+        st.subheader("🗑️ Borrar")
         opciones = [f"{row['id']} | {row['fecha']} - {row['cliente']} ({row['total']} €)" for index, row in df.iterrows()]
         col_del1, col_del2 = st.columns([3, 1])
         seleccion = col_del1.selectbox("Selecciona cuál borrar:", opciones, label_visibility="collapsed")
-        if col_del2.button("Eliminar Seleccionado", type="primary"):
+        if col_del2.button("Eliminar", type="primary"):
             id_borrar = seleccion.split(" | ")[0]
             try:
                 supabase.table('ingresos').delete().eq('id', id_borrar).execute()
@@ -334,11 +329,11 @@ def pagina_gastos():
 
     if not df.empty:
         st.markdown("---")
-        st.subheader("🗑️ Borrar Gasto")
+        st.subheader("🗑️ Borrar")
         opciones = [f"{row['id']} | {row['fecha']} - {row['proveedor']} ({row['total']} €)" for index, row in df.iterrows()]
         col_del1, col_del2 = st.columns([3, 1])
         seleccion = col_del1.selectbox("Selecciona cuál borrar:", opciones, label_visibility="collapsed")
-        if col_del2.button("Eliminar Gasto", type="primary"):
+        if col_del2.button("Eliminar", type="primary"):
             id_borrar = seleccion.split(" | ")[0]
             try:
                 supabase.table('gastos').delete().eq('id', id_borrar).execute()
@@ -350,15 +345,12 @@ def pagina_planes():
     
     # ⚠️ -------------------------------------------------------------
     # ⚠️ ZONA DE ENLACES (¡No borres las comillas!)
-    # Tu enlace real:
     LINK_NORMAL = "https://buy.stripe.com/fZu8wI2pT78CgHA9O9g7e04" 
-    # Pon aquí el enlace del PRO:
     LINK_PRO    = "https://buy.stripe.com/PON_AQUI_TU_ENLACE_PRO"
     # ----------------------------------------------------------------
 
     c1, c2, c3 = st.columns(3)
     
-    # --- PLAN GRATIS ---
     with c1:
         st.markdown("""
             <div class="plan-header" style="background-color: #64748B;">🌱 GRATIS</div>
@@ -373,7 +365,6 @@ def pagina_planes():
         if st.session_state['plan'] == 'DEMO': 
             st.button("PLAN ACTUAL", disabled=True, key="btn_free")
 
-    # --- PLAN NORMAL ---
     with c2:
         st.markdown("""
             <div class="plan-header" style="background-color: #3B82F6;">🚀 NORMAL</div>
@@ -391,7 +382,6 @@ def pagina_planes():
         else: 
             st.link_button("👉 SUSCRIBIRSE", "https://buy.stripe.com/8x23co9Sl8cG770gcxg7e09")
 
-    # --- PLAN PRO (REPARADO: CÓDIGO DIVIDIDO PARA QUE NO SE ROMPA) ---
     with c3:
         st.markdown("""
             <div class="plan-header" style="background: linear-gradient(to right, #F59E0B, #D97706);">👑 PRO</div>
@@ -406,7 +396,6 @@ def pagina_planes():
                 <li>✅ Soporte Email</li>
             </ul>
         """, unsafe_allow_html=True)
-        
         if st.session_state['plan'] == 'PRO': 
             st.button("✅ TU PLAN ACTUAL", disabled=True)
         else: 
@@ -425,6 +414,14 @@ else:
     with st.sidebar:
         st.write(f"Usuario: {st.session_state['user'].email}")
         opcion = st.radio("Menú", ["🏠 Dashboard", "💰 Ingresos", "💸 Gastos", "💎 Suscripción"], key='navegacion')
+        
+        # --- TIP 2: SOPORTE TÉCNICO ---
+        st.markdown("---")
+        st.caption("¿Necesitas ayuda?")
+        st.markdown("📧 [Soporte Técnico](mailto:finanzasyseguridadautonoma@gmail.com)")
+        st.markdown("---")
+        # ------------------------------
+
         if st.button("Cerrar Sesión"): logout()
 
     if "Dashboard" in opcion: pagina_dashboard()
