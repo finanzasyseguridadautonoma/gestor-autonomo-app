@@ -19,31 +19,97 @@ def init_supabase():
 
 supabase = init_supabase()
 
-# --- 3. DISEÑO VISUAL (CSS PREMIUM) ---
+# --- 3. DISEÑO VISUAL (CSS PRO - MODO APP NATIVA) ---
 st.markdown("""
     <style>
-    .stApp { background-color: #E3F2FD; color: #0D47A1; }
-    div[data-testid="column"], div[data-testid="stMetric"], div[data-testid="stGraphViz"], div[data-testid="stDataFrame"] {
-        background-color: #FFFFFF; border-radius: 15px; padding: 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #BBDEFB;
+    /* IMPORTAR FUENTE MODERNA (INTER) */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+    
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
     }
-    div[data-testid="stMetric"]:nth-of-type(1) { border-top: 8px solid #2ECC71; }
-    div[data-testid="stMetric"]:nth-of-type(2) { border-top: 8px solid #E74C3C; }
-    div[data-testid="stMetric"]:nth-of-type(3) { border-top: 8px solid #3498DB; }
+
+    /* QUITAR ELEMENTOS DE NAVEGADOR (HEADER, FOOTER, MENU) */
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
+    
+    /* FONDO Y COLOR GENERAL */
+    .stApp { background-color: #F8FAFC; color: #1E293B; }
+    
+    /* REDUCIR ESPACIOS PARA QUE QUEPA MÁS EN EL MÓVIL */
+    .block-container {
+        padding-top: 1rem !important;
+        padding-bottom: 2rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    /* TARJETAS CON EFECTO "GLASS" Y SOMBRA SUAVE */
+    div[data-testid="column"], div[data-testid="stMetric"], div[data-testid="stDataFrame"] {
+        background-color: #FFFFFF;
+        border-radius: 16px;
+        padding: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
+        border: none; /* Quitamos bordes feos */
+    }
+    
+    /* COLORES DASHBOARD (MÁS VIVOS) */
+    div[data-testid="stMetric"]:nth-of-type(1) { border-left: 6px solid #10B981; } /* Verde Esmeralda */
+    div[data-testid="stMetric"]:nth-of-type(2) { border-left: 6px solid #EF4444; } /* Rojo Vibrante */
+    div[data-testid="stMetric"]:nth-of-type(3) { border-left: 6px solid #3B82F6; } /* Azul Eléctrico */
+    
+    /* HUCHA HACIENDA DESTACADA */
     div[data-testid="stMetric"]:nth-of-type(4) {
-        background: linear-gradient(135deg, #FFF9C4 0%, #FFFFFF 100%);
-        border: 2px solid #FBC02D; transform: scale(1.02);
+        background: linear-gradient(135deg, #FFFBEB 0%, #FFFFFF 100%);
+        border: 2px solid #F59E0B;
+        transform: scale(1.0); /* Quitamos zoom para que no descuadre en móvil */
     }
-    div[data-testid="stMetric"]:nth-of-type(4) label { color: #F57F17 !important; font-weight: 900; }
+    div[data-testid="stMetric"]:nth-of-type(4) label { color: #D97706 !important; font-weight: 800; }
+    
+    /* HERO SECTION (CABECERA) */
     .hero-box {
-        background: linear-gradient(120deg, #1565C0 0%, #42A5F5 100%);
-        padding: 50px; border-radius: 20px; color: white; text-align: center;
-        margin-bottom: 30px; box-shadow: 0 10px 25px rgba(21, 101, 192, 0.3);
+        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+        padding: 30px; /* Más compacto */
+        border-radius: 20px;
+        color: white;
+        text-align: center;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
     }
-    .stButton > button { border-radius: 50px; font-weight: bold; border: 1px solid #1565C0; background-color: white; color: #1565C0; transition: 0.3s; }
-    .stButton > button:hover { background-color: #1565C0; color: white; transform: translateY(-2px); }
-    .plan-header { padding: 20px; border-radius: 12px 12px 0 0; color: white; text-align: center; font-weight: 800; font-size: 1.2em; margin: -21px -21px 20px -21px; text-transform: uppercase; }
-    h1, h2, h3 { color: #0D47A1 !important; }
+    
+    /* BOTONES TIPO APP (MÁS GORDITOS Y REDONDOS) */
+    .stButton > button {
+        border-radius: 12px; 
+        font-weight: 600; 
+        border: none;
+        background-color: #EFF6FF; 
+        color: #2563EB; 
+        padding: 0.5rem 1rem;
+        transition: all 0.2s;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .stButton > button:hover { 
+        background-color: #2563EB; 
+        color: white; 
+        box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+    }
+    
+    /* INPUTS (CAJAS DE TEXTO) MÁS MODERNAS */
+    .stTextInput > div > div > input {
+        border-radius: 10px;
+        border: 1px solid #E2E8F0;
+        background-color: white;
+    }
+
+    /* PLANES */
+    .plan-header {
+        padding: 15px; border-radius: 12px 12px 0 0; color: white;
+        text-align: center; font-weight: 800; font-size: 1.1em;
+        margin: -16px -16px 15px -16px; text-transform: uppercase; letter-spacing: 1px;
+    }
+    
+    h1, h2, h3 { color: #1E293B !important; font-family: 'Inter', sans-serif; font-weight: 800; }
     </style>
 """, unsafe_allow_html=True)
 
