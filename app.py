@@ -304,12 +304,12 @@ def pagina_planes():
         # AQUÍ CAMBIADO A 3 DÍAS
         st.markdown("""<div class="plan-header" style="background-color: #3B82F6;">🚀 NORMAL</div><h2 style="text-align:center; color:#333;">4.99 €<small>/mes</small></h2><center><span style="background-color:#E0F2F1; color:#00695C; padding: 2px 8px; border-radius:10px; font-size:0.8em;">🎁 3 DÍAS GRATIS</span></center><hr><ul style="list-style: none; padding:0; color: #4B5563;"><li>✅ <b>20 Registros/mes</b></li><li>✅ Dashboard Completo</li><li>✅ Soporte Email</li></ul>""", unsafe_allow_html=True)
         if st.session_state['plan'] == 'NORMAL': st.button("✅ TU PLAN ACTUAL", disabled=True)
-        else: st.link_button("👉 SUSCRIBIRSE", https://buy.stripe.com/fZu8wI2pT78CgHA9O9g7e04)
+        else: st.link_button("👉 SUSCRIBIRSE", "https://buy.stripe.com/fZu8wI2pT78CgHA9O9g7e04")
     with c3:
         # AQUÍ CAMBIADO A 3 DÍAS
         st.markdown("""<div class="plan-header" style="background: linear-gradient(to right, #F59E0B, #D97706);">👑 PRO</div><h2 style="text-align:center; color:#333;">11.99 €<small>/mes</small></h2><center><span style="background-color:#FFF3E0; color:#E65100; padding: 2px 8px; border-radius:10px; font-size:0.8em;">🎁 3 DÍAS GRATIS</span></center><hr><ul style="list-style: none; padding:0; color: #4B5563;"><li>🔥 <b>ILIMITADO</b></li><li>🔥 <b>Gestor Personal</b></li><li>✅ Soporte Email</li></ul>""", unsafe_allow_html=True)
         if st.session_state['plan'] == 'PRO': st.button("✅ TU PLAN ACTUAL", disabled=True)
-        else: st.link_button("👉 SUSCRIBIRSE", https://buy.stripe.com/dRm14g1lP2Sm7708K5g7e03)
+        else: st.link_button("👉 SUSCRIBIRSE", "https://buy.stripe.com/dRm14g1lP2Sm7708K5g7e03")
     
     st.write("")
     # TEXTO INFORMATIVO ACTUALIZADO
