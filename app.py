@@ -19,70 +19,39 @@ def init_supabase():
 
 supabase = init_supabase()
 
-# --- 3. DISEÑO VISUAL (CSS PREMIUM) ---
+# --- 3. DISEÑO VISUAL ---
 st.markdown("""
     <style>
-    /* FONDO AZUL FRESCO */
     .stApp { background-color: #E3F2FD; color: #0D47A1; }
-    
-    /* TARJETAS */
     div[data-testid="column"], div[data-testid="stMetric"], div[data-testid="stGraphViz"], div[data-testid="stDataFrame"] {
-        background-color: #FFFFFF;
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
-        border: 1px solid #BBDEFB;
+        background-color: #FFFFFF; border-radius: 15px; padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #BBDEFB;
     }
-    
-    /* COLORES DASHBOARD */
-    div[data-testid="stMetric"]:nth-of-type(1) { border-top: 8px solid #2ECC71; } /* Verde */
-    div[data-testid="stMetric"]:nth-of-type(2) { border-top: 8px solid #E74C3C; } /* Rojo */
-    div[data-testid="stMetric"]:nth-of-type(3) { border-top: 8px solid #3498DB; } /* Azul */
-    
-    /* HUCHA HACIENDA DESTACADA */
+    div[data-testid="stMetric"]:nth-of-type(1) { border-top: 8px solid #2ECC71; }
+    div[data-testid="stMetric"]:nth-of-type(2) { border-top: 8px solid #E74C3C; }
+    div[data-testid="stMetric"]:nth-of-type(3) { border-top: 8px solid #3498DB; }
     div[data-testid="stMetric"]:nth-of-type(4) {
         background: linear-gradient(135deg, #FFF9C4 0%, #FFFFFF 100%);
-        border: 2px solid #FBC02D;
-        box-shadow: 0 4px 15px rgba(251, 192, 45, 0.4);
-        transform: scale(1.02);
+        border: 2px solid #FBC02D; transform: scale(1.02);
     }
     div[data-testid="stMetric"]:nth-of-type(4) label { color: #F57F17 !important; font-weight: 900; }
-    
-    /* HERO SECTION (CABECERA DE ENTRADA) */
     .hero-box {
         background: linear-gradient(120deg, #1565C0 0%, #42A5F5 100%);
-        padding: 50px;
-        border-radius: 20px;
-        color: white;
-        text-align: center;
-        margin-bottom: 30px;
-        box-shadow: 0 10px 25px rgba(21, 101, 192, 0.3);
+        padding: 50px; border-radius: 20px; color: white; text-align: center;
+        margin-bottom: 30px; box-shadow: 0 10px 25px rgba(21, 101, 192, 0.3);
     }
-
-    /* BOTONES */
-    .stButton > button {
-        border-radius: 50px; font-weight: bold; border: 1px solid #1565C0;
-        background-color: white; color: #1565C0; transition: all 0.3s;
-    }
+    .stButton > button { border-radius: 50px; font-weight: bold; border: 1px solid #1565C0; background-color: white; color: #1565C0; transition: 0.3s; }
     .stButton > button:hover { background-color: #1565C0; color: white; transform: translateY(-2px); }
-    
-    /* CABECERAS PLANES */
-    .plan-header {
-        padding: 20px; border-radius: 12px 12px 0 0; color: white;
-        text-align: center; font-weight: 800; font-size: 1.2em;
-        margin: -21px -21px 20px -21px; text-transform: uppercase;
-    }
-    
+    .plan-header { padding: 20px; border-radius: 12px 12px 0 0; color: white; text-align: center; font-weight: 800; font-size: 1.2em; margin: -21px -21px 20px -21px; text-transform: uppercase; }
     h1, h2, h3 { color: #0D47A1 !important; }
     </style>
 """, unsafe_allow_html=True)
 
-# --- 4. GESTIÓN DE SESIÓN Y DATOS ---
+# --- 4. GESTIÓN DE SESIÓN ---
 if 'user' not in st.session_state: st.session_state['user'] = None
 if 'plan' not in st.session_state: st.session_state['plan'] = 'DEMO'
 if 'navegacion' not in st.session_state: st.session_state['navegacion'] = "🏠 Dashboard"
 
-# Inicializar vacíos por seguridad
 if 'ingresos' not in st.session_state: 
     st.session_state['ingresos'] = pd.DataFrame(columns=['fecha', 'cliente', 'base', 'iva_pct', 'cuota_iva', 'irpf_pct', 'retencion', 'total'])
 if 'gastos' not in st.session_state: 
@@ -91,22 +60,19 @@ if 'gastos' not in st.session_state:
 LIMITES = {'DEMO': 15, 'NORMAL': 20, 'PRO': 999999}
 
 def cargar_datos():
-    """Descarga datos de Supabase"""
     if st.session_state['user'] is None: return
     try:
-        user_id = st.session_state['user']['id']
+        # CORRECCIÓN: Usamos .id en lugar de ['id']
+        user_id = st.session_state['user'].id 
         
-        # Cargar Plan
         try:
             resp_perfil = supabase.table('perfiles').select('plan').eq('id', user_id).execute()
             if resp_perfil.data: st.session_state['plan'] = resp_perfil.data[0]['plan']
         except: st.session_state['plan'] = 'DEMO'
 
-        # Cargar Ingresos
         resp_ing = supabase.table('ingresos').select('*').eq('user_id', user_id).execute()
         st.session_state['ingresos'] = pd.DataFrame(resp_ing.data) if resp_ing.data else pd.DataFrame(columns=['fecha', 'cliente', 'base', 'iva_pct', 'cuota_iva', 'irpf_pct', 'retencion', 'total'])
 
-        # Cargar Gastos
         resp_gas = supabase.table('gastos').select('*').eq('user_id', user_id).execute()
         st.session_state['gastos'] = pd.DataFrame(resp_gas.data) if resp_gas.data else pd.DataFrame(columns=['fecha', 'proveedor', 'categoria', 'base', 'iva_pct', 'cuota_iva', 'irpf_pct', 'retencion', 'total'])
     
@@ -120,9 +86,9 @@ def check_limite():
 def ir_a_ingresos(): st.session_state['navegacion'] = "💰 Ingresos"
 def ir_a_gastos(): st.session_state['navegacion'] = "💸 Gastos"
 
-# --- 5. PANTALLA DE ENTRADA (LANDING PAGE) ---
+# --- 5. PÁGINAS ---
+
 def auth_page():
-    # Hero Box
     st.markdown("""
         <div class="hero-box">
             <div style="font-size: 3.5em; font-weight: 900; margin-bottom: 15px;">Gestor Autónomo PRO</div>
@@ -160,9 +126,9 @@ def auth_page():
 
     st.markdown("---")
     cA, cB, cC = st.columns(3)
-    with cA: st.info("📊 **Visual e Intuitivo**\n\nMira tus impuestos en tiempo real con gráficas claras.")
+    with cA: st.info("📊 **Visual e Intuitivo**\n\nMira tus impuestos en tiempo real.")
     with cB: st.warning("⚡ **Cálculo Automático**\n\nOlvídate de calcular el IVA y el IRPF manual.")
-    with cC: st.success("📱 **Multiplataforma**\n\nTus datos en la nube, accesibles desde móvil y PC.")
+    with cC: st.success("📱 **Multiplataforma**\n\nDatos en la nube, accesibles desde cualquier lugar.")
 
 def logout():
     supabase.auth.sign_out()
@@ -171,15 +137,13 @@ def logout():
     st.session_state['gastos'] = pd.DataFrame()
     st.rerun()
 
-# --- 6. PÁGINAS INTERNAS ---
-
 def pagina_dashboard():
+    # CORRECCIÓN: Usamos .email en lugar de ['email']
     st.markdown(f"### 👋 Hola, **{st.session_state['user'].email}**")
     
     df_i = st.session_state.get('ingresos', pd.DataFrame())
     df_g = st.session_state.get('gastos', pd.DataFrame())
 
-    # Cálculos seguros
     facturado = df_i['base'].sum() if not df_i.empty and 'base' in df_i.columns else 0.0
     gastos = df_g['base'].sum() if not df_g.empty and 'base' in df_g.columns else 0.0
     
@@ -203,8 +167,6 @@ def pagina_dashboard():
     c4.metric("🚨 HUCHA", f"{hucha:.2f} €", delta="GUARDAR")
     
     st.write("")
-    
-    # GRÁFICA
     st.subheader("📈 Evolución Mensual")
     chart_data = pd.DataFrame()
     if not df_i.empty and 'fecha' in df_i.columns:
@@ -227,15 +189,13 @@ def pagina_dashboard():
     else:
         st.info("Añade movimientos para ver la gráfica.")
 
-    # IMPUESTOS
     st.markdown("---")
     st.subheader("🏛️ Previsión Fiscal Trimestral")
     t1, t2, t3 = st.columns(3)
-    with t1: st.info(f"**MODELO 303 (IVA)**\n\n# {mod_303:.2f} €\n*(Lo que has cobrado de IVA menos lo que has pagado)*")
-    with t2: st.warning(f"**MODELO 130 (IRPF)**\n\n# {mod_130:.2f} €\n*(20% de tu beneficio acumulado)*")
-    with t3: st.error(f"**MODELO 111 (Retenciones)**\n\n# {mod_111:.2f} €\n*(IRPF retenido en facturas de profesionales)*")
+    with t1: st.info(f"**MODELO 303 (IVA)**\n\n# {mod_303:.2f} €\n*(IVA repercutido - soportado)*")
+    with t2: st.warning(f"**MODELO 130 (IRPF)**\n\n# {mod_130:.2f} €\n*(20% del beneficio acumulado)*")
+    with t3: st.error(f"**MODELO 111 (Retenciones)**\n\n# {mod_111:.2f} €\n*(Retenciones practicadas)*")
 
-    # ACCIONES RÁPIDAS
     st.markdown("---")
     st.subheader("⚡ Acciones Rápidas")
     b1, b2 = st.columns(2)
@@ -258,8 +218,10 @@ def pagina_ingresos():
                 c_iva = base * (iva/100)
                 ret = base * (irpf/100)
                 tot = base + c_iva - ret
+                # CORRECCIÓN: Usamos .id
                 supabase.table('ingresos').insert({
-                    "user_id": st.session_state['user']['id'], "fecha": str(fecha), "cliente": cli,
+                    "user_id": st.session_state['user'].id, 
+                    "fecha": str(fecha), "cliente": cli,
                     "base": base, "iva_pct": iva, "cuota_iva": c_iva, "irpf_pct": irpf, "retencion": ret, "total": tot
                 }).execute()
                 cargar_datos()
@@ -283,8 +245,10 @@ def pagina_gastos():
                 c_iva = base * (iva/100)
                 ret = base * (irpf/100)
                 tot = base + c_iva - ret
+                # CORRECCIÓN: Usamos .id
                 supabase.table('gastos').insert({
-                    "user_id": st.session_state['user']['id'], "fecha": str(fecha), "proveedor": prov, "categoria": cat,
+                    "user_id": st.session_state['user'].id,
+                    "fecha": str(fecha), "proveedor": prov, "categoria": cat,
                     "base": base, "iva_pct": iva, "cuota_iva": c_iva, "irpf_pct": irpf, "retencion": ret, "total": tot
                 }).execute()
                 cargar_datos()
@@ -294,77 +258,33 @@ def pagina_gastos():
 def pagina_planes():
     st.title("💎 Suscripción")
     
-    # -------------------------------------------------------------
-    # ⚠️ PEGA AQUÍ TUS ENLACES DE STRIPE (CON PRUEBA GRATUITA 7 DÍAS)
-    LINK_NORMAL = "https://buy.stripe.com/test_PON_AQUI_TU_ENLACE_NORMAL"
+    # ⚠️ TUS ENLACES DE STRIPE
+    LINK_NORMAL = "https://buy.stripe.com/bJe14g0hL3Wq9f86BXg7e02" # Tu enlace real
     LINK_PRO    = "https://buy.stripe.com/test_PON_AQUI_TU_ENLACE_PRO"
-    # -------------------------------------------------------------
 
     c1, c2, c3 = st.columns(3)
-    
-    # PLAN GRATIS
     with c1:
-        st.markdown("""
-            <div class="plan-header" style="background-color: #64748B;">🌱 GRATIS</div>
-            <h2 style="text-align:center; color:#333;">0 €</h2>
-            <hr>
-            <ul style="list-style: none; padding:0; color: #4B5563;">
-                <li>✅ 15 Registros prueba</li>
-                <li>✅ Dashboard Básico</li>
-                <li>❌ Soporte</li>
-            </ul>
-        """, unsafe_allow_html=True)
-        if st.session_state['plan'] == 'DEMO':
-            st.button("PLAN ACTUAL", disabled=True, key="btn_free")
-    
-    # PLAN NORMAL
+        st.markdown("""<div class="plan-header" style="background-color: #64748B;">🌱 GRATIS</div><h2 style="text-align:center; color:#333;">0 €</h2><hr><ul style="list-style: none; padding:0; color: #4B5563;"><li>✅ 15 Registros prueba</li><li>✅ Dashboard Básico</li><li>❌ Soporte</li></ul>""", unsafe_allow_html=True)
+        if st.session_state['plan'] == 'DEMO': st.button("PLAN ACTUAL", disabled=True, key="btn_free")
     with c2:
-        st.markdown("""
-            <div class="plan-header" style="background-color: #3B82F6;">🚀 NORMAL</div>
-            <h2 style="text-align:center; color:#333;">4.99 €<small>/mes</small></h2>
-            <center><span style="background-color:#E0F2F1; color:#00695C; padding: 2px 8px; border-radius:10px; font-size:0.8em;">🎁 7 DÍAS GRATIS</span></center>
-            <hr>
-            <ul style="list-style: none; padding:0; color: #4B5563;">
-                <li>✅ <b>20 Registros/mes</b></li>
-                <li>✅ Dashboard Completo</li>
-                <li>✅ Soporte Email</li>
-            </ul>
-        """, unsafe_allow_html=True)
-        if st.session_state['plan'] == 'NORMAL':
-            st.button("✅ TU PLAN ACTUAL", disabled=True)
-        else:
-            st.link_button("👉 SUSCRIBIRSE", "https://buy.stripe.com/bJe14g0hL3Wq9f86BXg7e02")
-
-    # PLAN PRO
+        st.markdown("""<div class="plan-header" style="background-color: #3B82F6;">🚀 NORMAL</div><h2 style="text-align:center; color:#333;">4.99 €<small>/mes</small></h2><center><span style="background-color:#E0F2F1; color:#00695C; padding: 2px 8px; border-radius:10px; font-size:0.8em;">🎁 7 DÍAS GRATIS</span></center><hr><ul style="list-style: none; padding:0; color: #4B5563;"><li>✅ <b>20 Registros/mes</b></li><li>✅ Dashboard Completo</li><li>✅ Soporte Email</li></ul>""", unsafe_allow_html=True)
+        if st.session_state['plan'] == 'NORMAL': st.button("✅ TU PLAN ACTUAL", disabled=True)
+        else: st.link_button("👉 PROBAR GRATIS", LINK_NORMAL, use_container_width=True)
     with c3:
-        st.markdown("""
-            <div class="plan-header" style="background: linear-gradient(to right, #F59E0B, #D97706);">👑 PRO</div>
-            <h2 style="text-align:center; color:#333;">11.99 €<small>/mes</small></h2>
-            <center><span style="background-color:#FFF3E0; color:#E65100; padding: 2px 8px; border-radius:10px; font-size:0.8em;">🎁 7 DÍAS GRATIS</span></center>
-            <hr>
-            <ul style="list-style: none; padding:0; color: #4B5563;">
-                <li>🔥 <b>ILIMITADO</b></li>
-                <li>🔥 <b>Gestor Personal</b></li>
-                <li>✅ Soporte Email</li>
-            </ul>
-        """, unsafe_allow_html=True)
-        if st.session_state['plan'] == 'PRO':
-            st.button("✅ TU PLAN ACTUAL", disabled=True)
-        else:
-            st.link_button("👉 SUSCRIBIRSE", "https://buy.stripe.com/fZucMYaWp50u1MGgcxg7e01")
+        st.markdown("""<div class="plan-header" style="background: linear-gradient(to right, #F59E0B, #D97706);">👑 PRO</div><h2 style="text-align:center; color:#333;">11.99 €<small>/mes</small></h2><center><span style="background-color:#FFF3E0; color:#E65100; padding: 2px 8px; border-radius:10px; font-size:0.8em;">🎁 7 DÍAS GRATIS</span></center><hr><ul style="list-style: none; padding:0; color: #4B5563;"><li>🔥 <b>ILIMITADO</b></li><li>🔥 <b>Gestor Personal</b></li><li>✅ Soporte Email</li></ul>""", unsafe_allow_html=True)
+        if st.session_state['plan'] == 'PRO': st.button("✅ TU PLAN ACTUAL", disabled=True)
+        else: st.link_button("👉 PROBAR GRATIS", LINK_PRO, use_container_width=True)
+    st.write(""); st.info("ℹ️ Tienes 7 días de prueba gratis. Cancela cuando quieras.")
 
-    st.write("")
-    st.info("ℹ️ **Sin compromiso:** Tienes 7 días de prueba gratis. Puedes cancelar cuando quieras antes de que termine el periodo.")
-
-# --- 7. CONTROLADOR PRINCIPAL BLINDADO ---
+# --- 6. CONTROLADOR PRINCIPAL BLINDADO ---
 if st.session_state['user'] is None:
     auth_page()
 else:
-    # SEGURIDAD: Verificar datos
     if 'ingresos' not in st.session_state or st.session_state['ingresos'] is None:
         cargar_datos()
 
     with st.sidebar:
+        # CORRECCIÓN: Usamos .email
         st.write(f"Usuario: {st.session_state['user'].email}")
         opcion = st.radio("Menú", ["🏠 Dashboard", "💰 Ingresos", "💸 Gastos", "💎 Suscripción"], key='navegacion')
         if st.button("Cerrar Sesión"): logout()
