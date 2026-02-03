@@ -19,7 +19,7 @@ def init_supabase():
 
 supabase = init_supabase()
 
-# --- 3. DISEÑO VISUAL ---
+# --- 3. DISEÑO VISUAL (CSS PREMIUM) ---
 st.markdown("""
     <style>
     .stApp { background-color: #E3F2FD; color: #0D47A1; }
@@ -53,16 +53,16 @@ if 'plan' not in st.session_state: st.session_state['plan'] = 'DEMO'
 if 'navegacion' not in st.session_state: st.session_state['navegacion'] = "🏠 Dashboard"
 
 if 'ingresos' not in st.session_state: 
-    st.session_state['ingresos'] = pd.DataFrame(columns=['fecha', 'cliente', 'base', 'iva_pct', 'cuota_iva', 'irpf_pct', 'retencion', 'total'])
+    st.session_state['ingresos'] = pd.DataFrame(columns=['id', 'fecha', 'cliente', 'base', 'iva_pct', 'cuota_iva', 'irpf_pct', 'retencion', 'total'])
 if 'gastos' not in st.session_state: 
-    st.session_state['gastos'] = pd.DataFrame(columns=['fecha', 'proveedor', 'categoria', 'base', 'iva_pct', 'cuota_iva', 'irpf_pct', 'retencion', 'total'])
+    st.session_state['gastos'] = pd.DataFrame(columns=['id', 'fecha', 'proveedor', 'categoria', 'base', 'iva_pct', 'cuota_iva', 'irpf_pct', 'retencion', 'total'])
 
 LIMITES = {'DEMO': 15, 'NORMAL': 20, 'PRO': 999999}
 
 def cargar_datos():
     if st.session_state['user'] is None: return
     try:
-        # CORRECCIÓN: Usamos .id en lugar de ['id']
+        # CORRECCIÓN NUBE: Usamos .id
         user_id = st.session_state['user'].id 
         
         try:
@@ -71,10 +71,10 @@ def cargar_datos():
         except: st.session_state['plan'] = 'DEMO'
 
         resp_ing = supabase.table('ingresos').select('*').eq('user_id', user_id).execute()
-        st.session_state['ingresos'] = pd.DataFrame(resp_ing.data) if resp_ing.data else pd.DataFrame(columns=['fecha', 'cliente', 'base', 'iva_pct', 'cuota_iva', 'irpf_pct', 'retencion', 'total'])
+        st.session_state['ingresos'] = pd.DataFrame(resp_ing.data) if resp_ing.data else pd.DataFrame(columns=['id', 'fecha', 'cliente', 'base', 'iva_pct', 'cuota_iva', 'irpf_pct', 'retencion', 'total'])
 
         resp_gas = supabase.table('gastos').select('*').eq('user_id', user_id).execute()
-        st.session_state['gastos'] = pd.DataFrame(resp_gas.data) if resp_gas.data else pd.DataFrame(columns=['fecha', 'proveedor', 'categoria', 'base', 'iva_pct', 'cuota_iva', 'irpf_pct', 'retencion', 'total'])
+        st.session_state['gastos'] = pd.DataFrame(resp_gas.data) if resp_gas.data else pd.DataFrame(columns=['id', 'fecha', 'proveedor', 'categoria', 'base', 'iva_pct', 'cuota_iva', 'irpf_pct', 'retencion', 'total'])
     
     except Exception as e:
         st.error(f"Error cargando datos: {e}")
@@ -138,7 +138,7 @@ def logout():
     st.rerun()
 
 def pagina_dashboard():
-    # CORRECCIÓN: Usamos .email en lugar de ['email']
+    # CORRECCIÓN NUBE: Usamos .email
     st.markdown(f"### 👋 Hola, **{st.session_state['user'].email}**")
     
     df_i = st.session_state.get('ingresos', pd.DataFrame())
@@ -218,7 +218,7 @@ def pagina_ingresos():
                 c_iva = base * (iva/100)
                 ret = base * (irpf/100)
                 tot = base + c_iva - ret
-                # CORRECCIÓN: Usamos .id
+                # CORRECCIÓN NUBE: Usamos .id
                 supabase.table('ingresos').insert({
                     "user_id": st.session_state['user'].id, 
                     "fecha": str(fecha), "cliente": cli,
@@ -226,7 +226,23 @@ def pagina_ingresos():
                 }).execute()
                 cargar_datos()
                 st.rerun()
-    st.dataframe(st.session_state['ingresos'], use_container_width=True)
+    
+    df = st.session_state['ingresos']
+    st.dataframe(df, use_container_width=True)
+
+    # SECCIÓN BORRAR
+    if not df.empty:
+        st.markdown("---")
+        st.subheader("🗑️ Borrar Ingreso")
+        opciones = [f"{row['id']} | {row['fecha']} - {row['cliente']} ({row['total']} €)" for index, row in df.iterrows()]
+        col_del1, col_del2 = st.columns([3, 1])
+        seleccion = col_del1.selectbox("Selecciona cuál borrar:", opciones, label_visibility="collapsed")
+        if col_del2.button("Eliminar Seleccionado", type="primary"):
+            id_borrar = seleccion.split(" | ")[0]
+            try:
+                supabase.table('ingresos').delete().eq('id', id_borrar).execute()
+                st.success("✅ Eliminado."); cargar_datos(); st.rerun()
+            except Exception as e: st.error(f"Error: {e}")
 
 def pagina_gastos():
     st.title("💸 Registrar Gastos")
@@ -245,7 +261,7 @@ def pagina_gastos():
                 c_iva = base * (iva/100)
                 ret = base * (irpf/100)
                 tot = base + c_iva - ret
-                # CORRECCIÓN: Usamos .id
+                # CORRECCIÓN NUBE: Usamos .id
                 supabase.table('gastos').insert({
                     "user_id": st.session_state['user'].id,
                     "fecha": str(fecha), "proveedor": prov, "categoria": cat,
@@ -253,28 +269,51 @@ def pagina_gastos():
                 }).execute()
                 cargar_datos()
                 st.rerun()
-    st.dataframe(st.session_state['gastos'], use_container_width=True)
+
+    df = st.session_state['gastos']
+    st.dataframe(df, use_container_width=True)
+
+    # SECCIÓN BORRAR
+    if not df.empty:
+        st.markdown("---")
+        st.subheader("🗑️ Borrar Gasto")
+        opciones = [f"{row['id']} | {row['fecha']} - {row['proveedor']} ({row['total']} €)" for index, row in df.iterrows()]
+        col_del1, col_del2 = st.columns([3, 1])
+        seleccion = col_del1.selectbox("Selecciona cuál borrar:", opciones, label_visibility="collapsed")
+        if col_del2.button("Eliminar Gasto", type="primary"):
+            id_borrar = seleccion.split(" | ")[0]
+            try:
+                supabase.table('gastos').delete().eq('id', id_borrar).execute()
+                st.success("✅ Eliminado."); cargar_datos(); st.rerun()
+            except Exception as e: st.error(f"Error: {e}")
 
 def pagina_planes():
     st.title("💎 Suscripción")
     
-    # ⚠️ TUS ENLACES DE STRIPE
-    LINK_NORMAL = "https://buy.stripe.com/bJe14g0hL3Wq9f86BXg7e02" # Tu enlace real
-    LINK_PRO    = "https://buy.stripe.com/test_PON_AQUI_TU_ENLACE_PRO"
+    # ⚠️ -----------------------------------------------
+    # ⚠️ CAMBIA ESTO CON TUS ENLACES REALES DE 3 DÍAS
+    LINK_NORMAL = "https://buy.stripe.com/test_..." 
+    LINK_PRO    = "https://buy.stripe.com/test_..."
+    # --------------------------------------------------
 
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown("""<div class="plan-header" style="background-color: #64748B;">🌱 GRATIS</div><h2 style="text-align:center; color:#333;">0 €</h2><hr><ul style="list-style: none; padding:0; color: #4B5563;"><li>✅ 15 Registros prueba</li><li>✅ Dashboard Básico</li><li>❌ Soporte</li></ul>""", unsafe_allow_html=True)
         if st.session_state['plan'] == 'DEMO': st.button("PLAN ACTUAL", disabled=True, key="btn_free")
     with c2:
-        st.markdown("""<div class="plan-header" style="background-color: #3B82F6;">🚀 NORMAL</div><h2 style="text-align:center; color:#333;">4.99 €<small>/mes</small></h2><center><span style="background-color:#E0F2F1; color:#00695C; padding: 2px 8px; border-radius:10px; font-size:0.8em;">🎁 7 DÍAS GRATIS</span></center><hr><ul style="list-style: none; padding:0; color: #4B5563;"><li>✅ <b>20 Registros/mes</b></li><li>✅ Dashboard Completo</li><li>✅ Soporte Email</li></ul>""", unsafe_allow_html=True)
+        # AQUÍ CAMBIADO A 3 DÍAS
+        st.markdown("""<div class="plan-header" style="background-color: #3B82F6;">🚀 NORMAL</div><h2 style="text-align:center; color:#333;">4.99 €<small>/mes</small></h2><center><span style="background-color:#E0F2F1; color:#00695C; padding: 2px 8px; border-radius:10px; font-size:0.8em;">🎁 3 DÍAS GRATIS</span></center><hr><ul style="list-style: none; padding:0; color: #4B5563;"><li>✅ <b>20 Registros/mes</b></li><li>✅ Dashboard Completo</li><li>✅ Soporte Email</li></ul>""", unsafe_allow_html=True)
         if st.session_state['plan'] == 'NORMAL': st.button("✅ TU PLAN ACTUAL", disabled=True)
-        else: st.link_button("👉 PROBAR GRATIS", LINK_NORMAL, use_container_width=True)
+        else: st.link_button("👉 SUSCRIBIRSE", https://buy.stripe.com/fZu8wI2pT78CgHA9O9g7e04)
     with c3:
-        st.markdown("""<div class="plan-header" style="background: linear-gradient(to right, #F59E0B, #D97706);">👑 PRO</div><h2 style="text-align:center; color:#333;">11.99 €<small>/mes</small></h2><center><span style="background-color:#FFF3E0; color:#E65100; padding: 2px 8px; border-radius:10px; font-size:0.8em;">🎁 7 DÍAS GRATIS</span></center><hr><ul style="list-style: none; padding:0; color: #4B5563;"><li>🔥 <b>ILIMITADO</b></li><li>🔥 <b>Gestor Personal</b></li><li>✅ Soporte Email</li></ul>""", unsafe_allow_html=True)
+        # AQUÍ CAMBIADO A 3 DÍAS
+        st.markdown("""<div class="plan-header" style="background: linear-gradient(to right, #F59E0B, #D97706);">👑 PRO</div><h2 style="text-align:center; color:#333;">11.99 €<small>/mes</small></h2><center><span style="background-color:#FFF3E0; color:#E65100; padding: 2px 8px; border-radius:10px; font-size:0.8em;">🎁 3 DÍAS GRATIS</span></center><hr><ul style="list-style: none; padding:0; color: #4B5563;"><li>🔥 <b>ILIMITADO</b></li><li>🔥 <b>Gestor Personal</b></li><li>✅ Soporte Email</li></ul>""", unsafe_allow_html=True)
         if st.session_state['plan'] == 'PRO': st.button("✅ TU PLAN ACTUAL", disabled=True)
-        else: st.link_button("👉 PROBAR GRATIS", LINK_PRO, use_container_width=True)
-    st.write(""); st.info("ℹ️ Tienes 7 días de prueba gratis. Cancela cuando quieras.")
+        else: st.link_button("👉 SUSCRIBIRSE", https://buy.stripe.com/dRm14g1lP2Sm7708K5g7e03)
+    
+    st.write("")
+    # TEXTO INFORMATIVO ACTUALIZADO
+    st.info("ℹ️ Tienes 3 días de prueba gratis. Cancela cuando quieras.")
 
 # --- 6. CONTROLADOR PRINCIPAL BLINDADO ---
 if st.session_state['user'] is None:
@@ -284,7 +323,7 @@ else:
         cargar_datos()
 
     with st.sidebar:
-        # CORRECCIÓN: Usamos .email
+        # CORRECCIÓN NUBE: Usamos .email
         st.write(f"Usuario: {st.session_state['user'].email}")
         opcion = st.radio("Menú", ["🏠 Dashboard", "💰 Ingresos", "💸 Gastos", "💎 Suscripción"], key='navegacion')
         if st.button("Cerrar Sesión"): logout()
