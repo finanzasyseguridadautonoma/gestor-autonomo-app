@@ -4,7 +4,7 @@ from supabase import create_client
 # --- 1. CONFIGURACIÓN ---
 st.set_page_config(page_title="Gestor Autónomo PRO", layout="wide", page_icon="logo.jpg")
 
-# --- 2. TUS ESTILOS CSS GENERALES (EXACTOS) ---
+# --- 2. TUS ESTILOS CSS GENERALES ---
 st.markdown("""
     <style>
     /* IMPORTAR FUENTE MODERNA (INTER) */
@@ -14,7 +14,7 @@ st.markdown("""
         font-family: 'Inter', sans-serif;
     }
 
-    /* QUITAR ELEMENTOS DE NAVEGADOR */
+    /* OCULTAR ELEMENTOS NATIVOS */
     #MainMenu {visibility: hidden;}
     header {visibility: hidden;}
     footer {visibility: hidden;}
@@ -22,15 +22,13 @@ st.markdown("""
     /* FONDO Y COLOR GENERAL */
     .stApp { background-color: #F8FAFC; color: #1E293B; }
     
-    /* REDUCIR ESPACIOS PARA MÓVIL */
+    /* ESPACIADO */
     .block-container {
         padding-top: 1rem !important;
         padding-bottom: 2rem !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
     }
 
-    /* HERO SECTION */
+    /* HERO SECTION (PANTALLA LOGIN) */
     .hero-box {
         background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
         padding: 30px;
@@ -70,10 +68,10 @@ if 'supabase' not in st.session_state:
 
 # --- 4. GESTIÓN DE SESIÓN ---
 if 'user' not in st.session_state: st.session_state['user'] = None
-if 'plan' not in st.session_state: st.session_state['plan'] = 'DEMO'
 
-# --- 5. LÓGICA DE LOGIN (TUYA) ---
+# --- 5. LÓGICA DE LOGIN ---
 if st.session_state['user'] is None:
+    # SI NO ESTÁ LOGUEADO: MOSTRAR PANTALLA DE ACCESO
     st.markdown("""
         <div class="hero-box">
             <div style="font-size: 2.5em; font-weight: 900; margin-bottom: 10px;">Gestor Autónomo PRO</div>
@@ -94,7 +92,7 @@ if st.session_state['user'] is None:
                     try:
                         resp = st.session_state['supabase'].auth.sign_in_with_password({"email": email, "password": password})
                         st.session_state['user'] = resp.user
-                        st.rerun()
+                        st.rerun() # Recarga para que entre en el 'else' de abajo
                     except Exception as e: st.error(f"Error: {e}")
             with tab2:
                 email_reg = st.text_input("Email Nuevo", key="reg_email")
@@ -105,7 +103,6 @@ if st.session_state['user'] is None:
                         st.success("¡Cuenta creada! Ya puedes iniciar sesión.")
                     except Exception as e: st.error(f"Error: {e}")
 
-    # AVISOS DE PIE DE PÁGINA
     st.markdown("---")
     cA, cB, cC = st.columns(3)
     with cA: st.info("📊 **Visual**\n\nImpuestos en tiempo real.")
@@ -113,11 +110,7 @@ if st.session_state['user'] is None:
     with cC: st.success("📱 **App**\n\nDesde cualquier lugar.")
 
 else:
-    # SI YA ESTÁ LOGUEADO
-    st.success(f"✅ Hola, {st.session_state['user'].email}")
-    st.info("👈 **¡Importante!** Usa el menú que ha aparecido a la izquierda para navegar.")
-    
-    if st.button("Cerrar Sesión"):
-        st.session_state['supabase'].auth.sign_out()
-        st.session_state['user'] = None
-        st.rerun()
+    # --- AQUÍ ESTÁ EL CAMBIO IMPORTANTE ---
+    # Si ya está logueado, NO mostrar texto, sino SALTAR al Dashboard
+    st.switch_page("pages/1_📊_Dashboard.py")
+
