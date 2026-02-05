@@ -1,4 +1,5 @@
 Impact-Site-Verification: 2ae39356-468f-4fc0-9230-cda9c6af5011
+
 import streamlit as st
 from supabase import create_client
 
@@ -114,5 +115,6 @@ else:
     # --- AQUÍ ESTÁ EL CAMBIO IMPORTANTE ---
     # Si ya está logueado, NO mostrar texto, sino SALTAR al Dashboard
     st.switch_page("pages/1_📊_Dashboard.py")
+
 
 
