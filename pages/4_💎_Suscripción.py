@@ -47,7 +47,7 @@ with c2:
             <li>✅ Soporte Email</li>
         </ul>
     """, unsafe_allow_html=True)
-    st.link_button("👉 SUSCRIBIRSE", LINK_NORMAL)
+    st.link_button("👉 SUSCRIBIRSE", "https://buy.stripe.com/8x23co9Sl8cG770gcxg7e09")
 
 with c3:
     st.markdown("""
@@ -63,7 +63,7 @@ with c3:
             <li>✅ Soporte Email</li>
         </ul>
     """, unsafe_allow_html=True)
-    st.link_button("👉 SUSCRIBIRSE", LINK_PRO)
+    st.link_button("👉 SUSCRIBIRSE", "https://buy.stripe.com/aFa5kw1lP0Kebng5xTg7e08")
 
 st.write("")
 st.info("ℹ️ Tienes 3 días de prueba gratis. Cancela cuando quieras.")
