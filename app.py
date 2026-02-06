@@ -37,6 +37,10 @@ st.markdown("""
         text-align: center;
         margin-bottom: 20px;
         box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+        height: 100%; /* Para que se alinee con el banner */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
     
     /* BOTONES TIPO APP */
@@ -71,13 +75,37 @@ if 'user' not in st.session_state: st.session_state['user'] = None
 
 # --- 5. LÓGICA DE LOGIN ---
 if st.session_state['user'] is None:
-    # SI NO ESTÁ LOGUEADO: MOSTRAR PANTALLA DE ACCESO
-    st.markdown("""
-        <div class="hero-box">
-            <div style="font-size: 2.5em; font-weight: 900; margin-bottom: 10px;">Gestor Autónomo PRO</div>
-            <div style="font-size: 1.2em; opacity: 0.95; font-weight: 300;">Tu fiscalidad bajo control.</div>
-        </div>
-    """, unsafe_allow_html=True)
+    
+    # ---------------------------------------------------------
+    # NUEVA CABECERA: HERO (Izquierda) + BANNER REVOLUT (Derecha)
+    # ---------------------------------------------------------
+    col_hero, col_banner = st.columns([3, 1], gap="medium")
+
+    with col_hero:
+        # TU DISEÑO ORIGINAL DE HERO BOX
+        st.markdown("""
+            <div class="hero-box">
+                <div style="font-size: 2.5em; font-weight: 900; margin-bottom: 10px;">Gestor Autónomo PRO</div>
+                <div style="font-size: 1.2em; opacity: 0.95; font-weight: 300;">Tu fiscalidad bajo control.</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with col_banner:
+        # EL NUEVO BANNER LATERAL
+        with st.container(border=True):
+            st.caption("✨ **Recomendado**")
+            # Uso el logo de Wikipedia para asegurar que cargue sin errores de archivo local
+            st.image("https://upload.wikimedia.org/wikipedia/commons/e/e7/Revolut_logo_2020.svg", use_container_width=True)
+            
+            # ¡IMPORTANTE! CAMBIA 'TU_ENLACE_AQUI' POR TU LINK DE AMIGO DE REVOLUT
+            st.link_button(
+                "🎁 Abrir Cuenta Gratis", 
+                "TU_ENLACE_AQUI", 
+                type="primary", 
+                use_container_width=True
+            )
+    
+    # ---------------------------------------------------------
 
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
@@ -110,8 +138,7 @@ if st.session_state['user'] is None:
     with cC: st.success("📱 **App**\n\nDesde cualquier lugar.")
 
 else:
-    # --- AQUÍ ESTÁ EL CAMBIO IMPORTANTE ---
-    # Si ya está logueado, NO mostrar texto, sino SALTAR al Dashboard
+    # SI YA ESTÁ LOGUEADO -> REDIRIGIR AL DASHBOARD
     st.switch_page("pages/1_📊_Dashboard.py")
 
 
