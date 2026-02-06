@@ -95,12 +95,12 @@ if st.session_state['user'] is None:
         with st.container(border=True):
             st.caption("✨ **Recomendado**")
             # Uso el logo de Wikipedia para asegurar que cargue sin errores de archivo local
-            st.image("https://upload.wikimedia.org/wikipedia/commons/e/e7/Revolut_logo_2020.svg", use_container_width=True)
+            st.image("revolu.jpg", use_container_width=True)
             
             # ¡IMPORTANTE! CAMBIA 'TU_ENLACE_AQUI' POR TU LINK DE AMIGO DE REVOLUT
             st.link_button(
                 "🎁 Abrir Cuenta Gratis", 
-                "TU_ENLACE_AQUI", 
+                "https://revolut.com/referral/?referral-code=jmorilloarevalo!FEB1-26-AR-CH1H-CRY&geo-redirect", 
                 type="primary", 
                 use_container_width=True
             )
@@ -140,6 +140,7 @@ if st.session_state['user'] is None:
 else:
     # SI YA ESTÁ LOGUEADO -> REDIRIGIR AL DASHBOARD
     st.switch_page("pages/1_📊_Dashboard.py")
+
 
 
 
