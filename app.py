@@ -28,14 +28,14 @@ st.markdown("""
         padding-bottom: 2rem !important;
     }
 
-    /* HERO SECTION (CABECERA) - AHORA LIMPIA Y CENTRADA */
+    /* HERO SECTION (CABECERA) */
     .hero-box {
         background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
-        padding: 40px 20px; /* Un poco más de aire vertical */
+        padding: 40px 20px;
         border-radius: 20px;
         color: white;
         text-align: center;
-        margin-bottom: 30px; /* Separación con el login */
+        margin-bottom: 40px; /* Separación con el contenido */
         box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2);
     }
     
@@ -45,7 +45,7 @@ st.markdown("""
         background-color: #EFF6FF; color: #2563EB; 
         padding: 0.6rem 1rem; transition: all 0.2s;
         box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        width: 100%; /* Para que ocupen todo el ancho disponible */
+        width: 100%; 
     }
     .stButton > button:hover { 
         background-color: #2563EB; color: white; 
@@ -74,9 +74,9 @@ if 'user' not in st.session_state: st.session_state['user'] = None
 if st.session_state['user'] is None:
     
     # ---------------------------------------------------------
-    # 1. LA CABECERA (HERO BOX) - OCUPA TODO EL ANCHO
+    # 1. LA CABECERA (HERO BOX) - CENTRADA ARRIBA
     # ---------------------------------------------------------
-    # Usamos columnas [1, 2, 1] solo para que el texto no se estire demasiado en pantallas 4K
+    # Usamos columnas para que no toque los bordes extremos de la pantalla
     c_left, c_hero, c_right = st.columns([1, 6, 1]) 
     
     with c_hero:
@@ -86,31 +86,37 @@ if st.session_state['user'] is None:
                     Gestor Autónomo PRO
                 </div>
                 <div style="font-size: 1.3em; opacity: 0.9; font-weight: 300;">
-                    Tu fiscalidad bajo control, sin complicaciones.
+                    Tu fiscalidad bajo control.
                 </div>
             </div>
         """, unsafe_allow_html=True)
 
     # ---------------------------------------------------------
-    # 2. EL FORMULARIO (IZQUIERDA) Y LA PUBLICIDAD (DERECHA)
+    # 2. ESTRUCTURA DE 3 COLUMNAS: VACÍO | LOGIN | BANNER
     # ---------------------------------------------------------
     
-    # Dividimos la pantalla: 60% para Login | 40% para Promo
-    # Usamos gap="large" para que no se peguen
-    col_login, col_promo = st.columns([3, 2], gap="large") 
+    # [1 espacio] | [2 espacios (Login)] | [1 espacio (Banner)]
+    col_vacia, col_login, col_banner = st.columns([1, 2, 1], gap="medium")
 
-    # --- COLUMNA IZQUIERDA: LOGIN Y REGISTRO ---
+    # --- COLUMNA 1: VACÍA (Solo para empujar el login al centro) ---
+    with col_vacia:
+        st.empty()
+
+    # --- COLUMNA 2: LOGIN (CENTRADO) ---
     with col_login:
         if st.session_state['supabase'] is None:
             st.error("❌ Error de conexión: Revisa secrets.toml")
         else:
-            st.write("#### 👋 Bienvenido de nuevo")
+            # Un pequeño título sutil encima del form
+            st.markdown("<h3 style='text-align: center; color: #334155;'>Bienvenido de nuevo 👋</h3>", unsafe_allow_html=True)
+            st.write("") # Espacio
+            
             tab1, tab2 = st.tabs(["Iniciar Sesión", "Crear Cuenta"])
             
             with tab1:
                 email = st.text_input("Email", key="login_email")
                 password = st.text_input("Contraseña", type="password", key="login_pass")
-                st.write("") # Espacio
+                st.write("") 
                 if st.button("🚀 ENTRAR"):
                     try:
                         resp = st.session_state['supabase'].auth.sign_in_with_password({"email": email, "password": password})
@@ -121,48 +127,52 @@ if st.session_state['user'] is None:
             with tab2:
                 email_reg = st.text_input("Email Nuevo", key="reg_email")
                 pass_reg = st.text_input("Contraseña Nueva", type="password", key="reg_pass")
-                st.write("") # Espacio
+                st.write("")
                 if st.button("✨ REGISTRARME"):
                     try:
                         resp = st.session_state['supabase'].auth.sign_up({"email": email_reg, "password": pass_reg})
                         st.success("¡Cuenta creada! Revisa tu email.")
                     except Exception as e: st.error(f"Error: {e}")
 
-    # --- COLUMNA DERECHA: REVOLUT (Centrado verticalmente con espacios) ---
-    with col_promo:
-        st.write("") # Truco: Espacios para bajar un poco el banner y alinearlo con los inputs
+    # --- COLUMNA 3: BANNER REVOLUT (LATERAL DERECHO) ---
+    with col_banner:
+        # Añadimos espacios verticales para que el banner baje un poco 
+        # y no se alinee con el título "Bienvenido", sino con los campos.
         st.write("") 
-        
+        st.write("") 
+        st.write("") 
+
+        # Contenedor con borde para que parezca un banner independiente
         with st.container(border=True):
-            st.caption("✨ **Recomendación del Desarrollador**")
-            # Banner de Revolut
+            st.caption("✨ **Recomendado**")
+            # Logo de Revolut
             st.image("revolut.jpg", use_container_width=True)
             
-            st.write("""
-            <div style="font-size: 0.9em; color: #64748B; margin-bottom: 15px;">
-            Separa tus gastos de autónomo y simplifica tu contabilidad con la cuenta business que yo uso.
+            st.markdown("""
+            <div style="font-size: 0.85em; color: #64748B; margin-bottom: 10px; line-height: 1.4;">
+            La cuenta business que uso para separar impuestos y gastos.
             </div>
             """, unsafe_allow_html=True)
             
-            # --- ¡PON TU ENLACE AQUÍ! ---
+            # --- ¡TU ENLACE AQUÍ! ---
             st.link_button(
-                "🎁 Abrir Cuenta Gratis", 
+                "🎁 Cuenta Gratis", 
                 "https://revolut.com/referral/?referral-code=jmorilloarevalo!FEB1-26-AR-CH1H-CRY&geo-redirect", 
                 type="primary", 
                 use_container_width=True
             )
 
     # ---------------------------------------------------------
-    # 3. PIE DE PÁGINA (FEATURES)
+    # 3. PIE DE PÁGINA
     # ---------------------------------------------------------
-    st.markdown("---")
+    st.markdown("<br><br><hr>", unsafe_allow_html=True) # Espacio y línea
     cA, cB, cC = st.columns(3)
     with cA: st.info("📊 **Visual**\n\nImpuestos en tiempo real.")
     with cB: st.warning("⚡ **Automático**\n\nSin cálculos manuales.")
     with cC: st.success("📱 **App**\n\nDesde cualquier lugar.")
 
 else:
-    # SI YA ESTÁ LOGUEADO -> REDIRIGIR AL DASHBOARD
+    # SI YA ESTÁ LOGUEADO -> REDIRIGIR
     st.switch_page("pages/1_📊_Dashboard.py")
 
 
