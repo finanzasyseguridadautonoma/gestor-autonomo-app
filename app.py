@@ -1,7 +1,7 @@
 import streamlit as st
 from supabase import create_client
 
-# --- 1. CONFIGURACIÓN ---
+# --- 1. Configuración (IMPORTANTE: layout="wide" para que el 20% no se vea enano)
 st.set_page_config(page_title="Gestor Autónomo PRO", layout="wide", page_icon="logo.jpg")
 
 # ---------------------------------------------------------
@@ -136,6 +136,7 @@ else:
     # --- AQUÍ ESTÁ EL CAMBIO IMPORTANTE ---
     # Si ya está logueado, NO mostrar texto, sino SALTAR al Dashboard
     st.switch_page("pages/1_📊_Dashboard.py")
+
 
 
 
