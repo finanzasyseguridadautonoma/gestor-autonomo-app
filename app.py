@@ -4,7 +4,7 @@ from supabase import create_client
 # --- 1. CONFIGURACIÓN  ---
 st.set_page_config(page_title="Gestor Autónomo PRO", layout="wide", page_icon="logo.jpg")
 
-# --- 2. TUS ESTILOS CSS GENERALES ---
+# --- 2. TUS ESTILOS CSS GENERALES (CSS REFORZADO) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
@@ -47,25 +47,27 @@ st.markdown("""
         box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
     }
 
-    /* --- 📱 TRUCO DE MAGIA PARA MÓVIL --- */
-    /* Esto reordena las columnas solo cuando la pantalla es pequeña */
-    @media (max-width: 768px) {
-        /* Forzamos que el contenedor de columnas use Flexbox vertical */
-        div[data-testid="stHorizontalBlock"] {
+    /* --- 📱 TRUCO DE MAGIA PARA MÓVIL (VERSIÓN FUERTE) --- */
+    @media only screen and (max-width: 768px) {
+        
+        /* 1. Obligamos al contenedor de columnas a ser flexible vertical */
+        [data-testid="stHorizontalBlock"] {
             display: flex !important;
             flex-direction: column !important;
+            gap: 20px !important;
         }
         
-        /* Seleccionamos la 2ª columna (El Login) y la mandamos arriba (-1) */
-        div[data-testid="column"]:nth-of-type(2) {
-            order: -1 !important;
-            margin-bottom: 30px; /* Un poco de aire debajo del login en móvil */
+        /* 2. SELECCIONAMOS LA COLUMNA 2 (LOGIN) Y LA MOVEMOS PRIMERO */
+        [data-testid="column"]:nth-of-type(2) {
+            order: -1 !important; /* El -1 la manda arriba del todo */
+            margin-bottom: 10px !important;
+            z-index: 99 !important;
         }
         
-        /* Las columnas 1 y 3 (Ventajas y Banner) se quedan en su sitio (debajo) */
-        div[data-testid="column"]:nth-of-type(1),
-        div[data-testid="column"]:nth-of-type(3) {
-            order: 0 !important;
+        /* 3. Las otras columnas (1 y 3) se quedan debajo (orden 0 por defecto) */
+        [data-testid="column"]:nth-of-type(1),
+        [data-testid="column"]:nth-of-type(3) {
+            order: 1 !important;
         }
     }
     </style>
@@ -90,7 +92,7 @@ if 'user' not in st.session_state: st.session_state['user'] = None
 # --- 5. LÓGICA DE PANTALLA PRINCIPAL ---
 if st.session_state['user'] is None:
     
-    # A. CABECERA (HERO BOX)
+    # A. CABECERA
     c_left, c_hero, c_right = st.columns([1, 6, 1]) 
     with c_hero:
         st.markdown("""
@@ -105,8 +107,6 @@ if st.session_state['user'] is None:
         """, unsafe_allow_html=True)
 
     # B. CUERPO (Ventajas | Login | Banner)
-    # En escritorio: Ventajas - Login - Banner
-    # En móvil (gracias al CSS): Login - Ventajas - Banner
     col_izq, col_login, col_der = st.columns([1, 2.2, 1], gap="large")
 
     # --- 1. IZQUIERDA: VENTAJAS ---
@@ -133,7 +133,7 @@ if st.session_state['user'] is None:
         </div>
         """, unsafe_allow_html=True)
 
-    # --- 2. CENTRO: LOGIN (LA TARJETA) ---
+    # --- 2. CENTRO: LOGIN ---
     with col_login:
         if st.session_state['supabase'] is None:
             st.error("❌ Error de conexión: Revisa secrets.toml")
@@ -208,6 +208,7 @@ if st.session_state['user'] is None:
 
 else:
     st.switch_page("pages/1_📊_Dashboard.py")
+
 
 
 
