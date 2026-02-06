@@ -4,18 +4,6 @@ from supabase import create_client
 # --- 1. CONFIGURACIÓN ---
 st.set_page_config(page_title="Gestor Autónomo PRO", layout="wide", page_icon="logo.jpg")
 
-with st.sidebar:
-    # 1. La Foto (Tu banner)
-    st.image("revolut.jpg", use_container_width=True)
-    
-    # 2. El Botón (Pegado debajo, ocupando todo el ancho)
-    st.link_button(
-        "🎁 Abrir Cuenta Gratis", 
-        "https://revolut.com/referral/?referral-code=jmorilloarevalo!FEB1-26-AR-CH1H-CRY&geo-redirect", 
-        type="primary", 
-        use_container_width=True
-    )
-
 # --- 2. TUS ESTILOS CSS GENERALES ---
 st.markdown("""
     <style>
@@ -125,6 +113,7 @@ else:
     # --- AQUÍ ESTÁ EL CAMBIO IMPORTANTE ---
     # Si ya está logueado, NO mostrar texto, sino SALTAR al Dashboard
     st.switch_page("pages/1_📊_Dashboard.py")
+
 
 
 
