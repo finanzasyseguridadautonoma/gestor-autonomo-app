@@ -95,7 +95,7 @@ if st.session_state['user'] is None:
         with st.container(border=True):
             st.caption("✨ **Recomendado**")
             # Uso el logo de Wikipedia para asegurar que cargue sin errores de archivo local
-            st.image("revolu.jpg", use_container_width=True)
+            st.image("revolut.jpg", use_container_width=True)
             
             # ¡IMPORTANTE! CAMBIA 'TU_ENLACE_AQUI' POR TU LINK DE AMIGO DE REVOLUT
             st.link_button(
@@ -140,6 +140,7 @@ if st.session_state['user'] is None:
 else:
     # SI YA ESTÁ LOGUEADO -> REDIRIGIR AL DASHBOARD
     st.switch_page("pages/1_📊_Dashboard.py")
+
 
 
 
