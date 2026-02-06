@@ -4,6 +4,29 @@ from supabase import create_client
 # --- 1. CONFIGURACIÓN ---
 st.set_page_config(page_title="Gestor Autónomo PRO", layout="wide", page_icon="logo.jpg")
 
+# ---------------------------------------------------------
+# MAQUETACIÓN: 80% APP | 20% BANNER
+# ---------------------------------------------------------
+
+# Cambiamos los números a [4, 1] para que el banner sea más estrecho
+col_app, col_banner = st.columns([4, 1], gap="medium")
+
+# --- COLUMNA DERECHA (20%): TU BANNER ---
+with col_banner:
+    with st.container(border=True): 
+        st.caption("✨ **Recomendado**") # Caption es letra más pequeña y discreta
+        st.image("revolut_promo.png", use_container_width=True)
+        st.link_button(
+            "🎁 Abrir Cuenta", 
+            "https://revolut.com/referral/TU_ENLACE_AQUI", 
+            type="primary", 
+            use_container_width=True
+        )
+
+# --- COLUMNA IZQUIERDA (80%): TU APP ---
+with col_app:
+    st.title("Gestor Autónomo PRO")
+
 # --- 2. TUS ESTILOS CSS GENERALES ---
 st.markdown("""
     <style>
@@ -113,6 +136,7 @@ else:
     # --- AQUÍ ESTÁ EL CAMBIO IMPORTANTE ---
     # Si ya está logueado, NO mostrar texto, sino SALTAR al Dashboard
     st.switch_page("pages/1_📊_Dashboard.py")
+
 
 
 
