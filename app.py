@@ -99,7 +99,7 @@ if st.session_state['user'] is None:
         with st.container(border=True):
             st.caption("✨ **Recomendado**")
             # Usamos el link Web para evitar errores de archivo
-            st.image("https://upload.wikimedia.org/wikipedia/commons/e/e7/Revolut_logo_2020.svg", use_container_width=True)
+            st.image("revolut.jpg", use_container_width=True)
             
             # TU ENLACE AQUÍ
             st.link_button(
@@ -146,6 +146,7 @@ if st.session_state['user'] is None:
 else:
     # SI YA ESTÁ LOGUEADO -> REDIRIGIR AL DASHBOARD
     st.switch_page("pages/1_📊_Dashboard.py")
+
 
 
 
