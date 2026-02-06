@@ -35,17 +35,17 @@ st.markdown("""
         border-radius: 20px;
         color: white;
         text-align: center;
-        margin-bottom: 40px; /* Separación con el contenido */
+        margin-bottom: 40px; 
         box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2);
     }
     
-    /* BOTONES TIPO APP */
+    /* BOTONES TIPO APP (ESTILO MEJORADO) */
     .stButton > button {
         border-radius: 12px; font-weight: 600; border: none;
         background-color: #EFF6FF; color: #2563EB; 
         padding: 0.6rem 1rem; transition: all 0.2s;
         box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        width: 100%; 
+        /* Width 100% se maneja ahora con use_container_width en el código Python */
     }
     .stButton > button:hover { 
         background-color: #2563EB; color: white; 
@@ -74,9 +74,8 @@ if 'user' not in st.session_state: st.session_state['user'] = None
 if st.session_state['user'] is None:
     
     # ---------------------------------------------------------
-    # 1. LA CABECERA (HERO BOX) - CENTRADA ARRIBA
+    # A. CABECERA (HERO BOX) - CENTRADA ARRIBA
     # ---------------------------------------------------------
-    # Usamos columnas para que no toque los bordes extremos de la pantalla
     c_left, c_hero, c_right = st.columns([1, 6, 1]) 
     
     with c_hero:
@@ -92,24 +91,33 @@ if st.session_state['user'] is None:
         """, unsafe_allow_html=True)
 
     # ---------------------------------------------------------
-    # 2. ESTRUCTURA DE 3 COLUMNAS: VACÍO | LOGIN | BANNER
+    # B. CUERPO TRIPARTITO: VENTAJAS | LOGIN | BANNER
     # ---------------------------------------------------------
-    
-    # [1 espacio] | [2 espacios (Login)] | [1 espacio (Banner)]
-    col_vacia, col_login, col_banner = st.columns([1, 2, 1], gap="medium")
+    # Usamos [1, 2, 1] para un equilibrio perfecto
+    col_izq, col_login, col_der = st.columns([1, 2, 1], gap="large")
 
-    # --- COLUMNA 1: VACÍA (Solo para empujar el login al centro) ---
-    with col_vacia:
-        st.empty()
+    # --- 1. IZQUIERDA: VENTAJAS (Para dar simetría) ---
+    with col_izq:
+        # Espacios para bajar el texto y alinearlo con los inputs del login
+        st.write("") 
+        st.write("") 
+        st.write("")
+        st.markdown("""
+        <div style="color: #475569; padding-left: 20px;">
+            <h3 style="color: #1E293B;">¿Por qué PRO?</h3>
+            <p>✅ <b>Todo Automático</b><br>Olvídate de Excel.</p>
+            <p>📊 <b>Visual</b><br>Gráficos en tiempo real.</p>
+            <p>🔒 <b>Seguro</b><br>Tus datos encriptados.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-    # --- COLUMNA 2: LOGIN (CENTRADO) ---
+    # --- 2. CENTRO: LOGIN (El protagonista) ---
     with col_login:
         if st.session_state['supabase'] is None:
             st.error("❌ Error de conexión: Revisa secrets.toml")
         else:
-            # Un pequeño título sutil encima del form
-            st.markdown("<h3 style='text-align: center; color: #334155;'>Bienvenido de nuevo 👋</h3>", unsafe_allow_html=True)
-            st.write("") # Espacio
+            # Título sutil
+            st.markdown("<h3 style='text-align: center; color: #334155; margin-bottom: 20px;'>Bienvenido de nuevo 👋</h3>", unsafe_allow_html=True)
             
             tab1, tab2 = st.tabs(["Iniciar Sesión", "Crear Cuenta"])
             
@@ -117,7 +125,8 @@ if st.session_state['user'] is None:
                 email = st.text_input("Email", key="login_email")
                 password = st.text_input("Contraseña", type="password", key="login_pass")
                 st.write("") 
-                if st.button("🚀 ENTRAR"):
+                # BOTÓN ANCHO
+                if st.button("🚀 ENTRAR", use_container_width=True):
                     try:
                         resp = st.session_state['supabase'].auth.sign_in_with_password({"email": email, "password": password})
                         st.session_state['user'] = resp.user
@@ -128,33 +137,32 @@ if st.session_state['user'] is None:
                 email_reg = st.text_input("Email Nuevo", key="reg_email")
                 pass_reg = st.text_input("Contraseña Nueva", type="password", key="reg_pass")
                 st.write("")
-                if st.button("✨ REGISTRARME"):
+                # BOTÓN ANCHO
+                if st.button("✨ REGISTRARME", use_container_width=True):
                     try:
                         resp = st.session_state['supabase'].auth.sign_up({"email": email_reg, "password": pass_reg})
                         st.success("¡Cuenta creada! Revisa tu email.")
                     except Exception as e: st.error(f"Error: {e}")
 
-    # --- COLUMNA 3: BANNER REVOLUT (LATERAL DERECHO) ---
-    with col_banner:
-        # Añadimos espacios verticales para que el banner baje un poco 
-        # y no se alinee con el título "Bienvenido", sino con los campos.
+    # --- 3. DERECHA: BANNER REVOLUT (Delgado y alineado) ---
+    with col_der:
+        # Espacios para alinearlo visualmente con el formulario
         st.write("") 
         st.write("") 
         st.write("") 
 
-        # Contenedor con borde para que parezca un banner independiente
         with st.container(border=True):
             st.caption("✨ **Recomendado**")
-            # Logo de Revolut
+            # Logo oficial
             st.image("revolut.jpg", use_container_width=True)
             
             st.markdown("""
-            <div style="font-size: 0.85em; color: #64748B; margin-bottom: 10px; line-height: 1.4;">
+            <div style="font-size: 0.85em; color: #64748B; margin-bottom: 15px; line-height: 1.4;">
             La cuenta business que uso para separar impuestos y gastos.
             </div>
             """, unsafe_allow_html=True)
             
-            # --- ¡TU ENLACE AQUÍ! ---
+            # --- ¡¡PEGA AQUÍ TU ENLACE!! ---
             st.link_button(
                 "🎁 Cuenta Gratis", 
                 "https://revolut.com/referral/?referral-code=jmorilloarevalo!FEB1-26-AR-CH1H-CRY&geo-redirect", 
@@ -163,9 +171,9 @@ if st.session_state['user'] is None:
             )
 
     # ---------------------------------------------------------
-    # 3. PIE DE PÁGINA
+    # C. PIE DE PÁGINA
     # ---------------------------------------------------------
-    st.markdown("<br><br><hr>", unsafe_allow_html=True) # Espacio y línea
+    st.markdown("<br><br><hr>", unsafe_allow_html=True)
     cA, cB, cC = st.columns(3)
     with cA: st.info("📊 **Visual**\n\nImpuestos en tiempo real.")
     with cB: st.warning("⚡ **Automático**\n\nSin cálculos manuales.")
