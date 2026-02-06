@@ -4,7 +4,7 @@ from supabase import create_client
 # --- 1. CONFIGURACIÓN  ---
 st.set_page_config(page_title="Gestor Autónomo PRO", layout="wide", page_icon="logo.jpg")
 
-# --- 2. TUS ESTILOS CSS GENERALES ---
+# --- 2. TUS ESTILOS CSS GENERALES (MEJORADOS) ---
 st.markdown("""
     <style>
     /* IMPORTAR FUENTE MODERNA (INTER) */
@@ -28,19 +28,23 @@ st.markdown("""
         padding-bottom: 2rem !important;
     }
 
-    /* HERO SECTION (PANTALLA LOGIN) */
+    /* HERO SECTION (PANTALLA LOGIN) - CORREGIDO EL CENTRADO */
     .hero-box {
         background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
-        padding: 30px;
+        padding: 20px;
         border-radius: 20px;
         color: white;
         text-align: center;
-        margin-bottom: 20px;
+        margin-bottom: 0px; /* Quitamos margen para alinear con el banner */
         box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
-        height: 100%; /* Para que se alinee con el banner */
+        
+        /* TRUCOS PARA CENTRADO PERFECTO */
+        height: 100%;       /* Intenta ocupar toda la altura */
+        min-height: 220px;  /* Altura mínima para que coincida con el banner */
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: center; /* Centra VERTICALMENTE */
+        align-items: center;     /* Centra HORIZONTALMENTE */
     }
     
     /* BOTONES TIPO APP */
@@ -77,27 +81,27 @@ if 'user' not in st.session_state: st.session_state['user'] = None
 if st.session_state['user'] is None:
     
     # ---------------------------------------------------------
-    # NUEVA CABECERA: HERO (Izquierda) + BANNER REVOLUT (Derecha)
+    # CABECERA ALINEADA: HERO + BANNER
     # ---------------------------------------------------------
+    # Ajustamos gap="small" para que estén más juntitos si quieres
     col_hero, col_banner = st.columns([3, 1], gap="medium")
 
     with col_hero:
-        # TU DISEÑO ORIGINAL DE HERO BOX
         st.markdown("""
             <div class="hero-box">
-                <div style="font-size: 2.5em; font-weight: 900; margin-bottom: 10px;">Gestor Autónomo PRO</div>
-                <div style="font-size: 1.2em; opacity: 0.95; font-weight: 300;">Tu fiscalidad bajo control.</div>
+                <div style="font-size: 2.8em; font-weight: 900; line-height: 1.2;">Gestor Autónomo PRO</div>
+                <div style="font-size: 1.2em; opacity: 0.95; font-weight: 300; margin-top: 10px;">Tu fiscalidad bajo control</div>
             </div>
         """, unsafe_allow_html=True)
 
     with col_banner:
-        # EL NUEVO BANNER LATERAL
+        # Contenedor del Banner
         with st.container(border=True):
             st.caption("✨ **Recomendado**")
-            # Uso el logo de Wikipedia para asegurar que cargue sin errores de archivo local
-            st.image("revolut.jpg", use_container_width=True)
+            # Usamos el link Web para evitar errores de archivo
+            st.image("https://upload.wikimedia.org/wikipedia/commons/e/e7/Revolut_logo_2020.svg", use_container_width=True)
             
-            # ¡IMPORTANTE! CAMBIA 'TU_ENLACE_AQUI' POR TU LINK DE AMIGO DE REVOLUT
+            # TU ENLACE AQUÍ
             st.link_button(
                 "🎁 Abrir Cuenta Gratis", 
                 "https://revolut.com/referral/?referral-code=jmorilloarevalo!FEB1-26-AR-CH1H-CRY&geo-redirect", 
@@ -107,6 +111,8 @@ if st.session_state['user'] is None:
     
     # ---------------------------------------------------------
 
+    st.write("") # Espacio separador
+    
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
         if st.session_state['supabase'] is None:
@@ -120,7 +126,7 @@ if st.session_state['user'] is None:
                     try:
                         resp = st.session_state['supabase'].auth.sign_in_with_password({"email": email, "password": password})
                         st.session_state['user'] = resp.user
-                        st.rerun() # Recarga para que entre en el 'else' de abajo
+                        st.rerun() 
                     except Exception as e: st.error(f"Error: {e}")
             with tab2:
                 email_reg = st.text_input("Email Nuevo", key="reg_email")
