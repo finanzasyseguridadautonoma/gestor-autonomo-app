@@ -16,7 +16,7 @@ st.divider()
 col_img, col_txt = st.columns([1, 2], gap="medium")
 
 with col_img:
-    st.image("https://images.ctfassets.net/q33z48p65a6w/3e57d268-1651-4c6d-964c-784044061867/Revolut-Standard-Plus-Premium-Metal-Cards.png", use_container_width=True)
+    st.image("revolut.jpg", use_container_width=True)
 
 with col_txt:
     st.subheader("🏦 Revolut para Autónomos")
